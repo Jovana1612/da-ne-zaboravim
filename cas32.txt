@@ -1,0 +1,160 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support;
+using OpenQA.Selenium.Support.UI;
+
+namespace cas32
+{
+    class TestCase
+    {
+        IWebDriver driver;
+        string isDisplayed;
+        string email = "qa1@testing.net";
+        string pwd = "pw0rd4qa";
+        
+
+        [SetUp]
+        public void StartBrowser()
+        {
+            driver = new FirefoxDriver();
+        }
+
+        public void GoToURL(string url)
+        {
+            this.driver.Url = url;
+        }
+
+        public void Sleep(int seconds)
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(seconds));
+        }
+
+        public IWebElement WaitForElement(By by, int timeoutSeconds)
+        {
+            if (timeoutSeconds > 0)
+            {
+                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
+                wait.Until(drv => drv.FindElement(by));
+            }
+
+            return driver.FindElement(by);
+        }
+
+        [Test]
+        public void TestingRegistrationQA()
+        {
+            GoToURL("https://courses.ultimateqa.com/users/sign_up");
+            Sleep(10);
+
+            bool isRegOpen = driver.FindElement(By.Id("user_first_name")).Displayed;
+            isDisplayed = Convert.ToString(isRegOpen);
+            System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Registration page is opened" + isDisplayed + Environment.NewLine);
+
+            driver.FindElement(By.Id("user_first_name")).SendKeys("QAFirst");
+            driver.FindElement(By.Id("user_last_name")).SendKeys("QALast");
+            driver.FindElement(By.Id("user_email")).SendKeys(email);
+            driver.FindElement(By.Id("user_password")).SendKeys(pwd);
+            driver.FindElement(By.Id("btn-signup")).Click();
+
+            Sleep(10);
+        }
+
+        [Test]
+        public void UltimateQASignIn()
+        {
+            string qaSignIn = "https://courses.ultimateqa.com/";
+
+            GoToURL(qaSignIn);
+            Sleep(10);
+
+            //dobijanje trenutnog URLa otvorene stranice
+            string currentURL = driver.Url;
+            System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Current URL is: " + currentURL + Environment.NewLine);
+
+            if (qaSignIn == currentURL)
+            {
+                //Jedan nacin za proveru da li je unet url jednak trenutnom url u brauzeru
+                //System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Current URL is equal to entered URL" + Environment.NewLine);
+
+                //Drugi nacin provere da li je jednak
+                bool isTrue = true;
+                System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Current URL is equal to entered URL" + Environment.NewLine);
+                
+            }
+            else
+            {
+                //Jedan nacin provere da li unet url nije jednak url u brauzeru
+                //System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Current URL is NOT equal to entered URL" + Environment.NewLine);
+
+                //Drugi nacin da nije jednak
+                bool isTrue = false;
+                System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Current URL is NOT equal to entered URL" + isTrue + Environment.NewLine);
+            }
+
+            //klik na sign in
+            driver.FindElement(By.PartialLinkText("Sign In")).Click();
+            Sleep(10);
+
+            IWebElement userEmail = driver.FindElement(By.Id("user_email"));
+            IWebElement userpwd = driver.FindElement(By.Id("user_password"));
+            IWebElement submitBtn = driver.FindElement(By.Id("btn-signin"));
+
+            bool chk1 = userEmail.Displayed;
+            bool chk2 = userpwd.Displayed;
+            bool chk3 = submitBtn.Displayed;
+
+            //1 nacin ispisa
+            bool chk4 = chk1 && chk2 && chk3;
+            isDisplayed = Convert.ToString(chk4);
+            System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "1. Nacin - polja email, password i button sign in" + isDisplayed + Environment.NewLine);
+
+            //2 nacin skracena varijanta
+            isDisplayed = Convert.ToString(chk1 && chk2 && chk3);
+            System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "2. Nacin - polja email, password i button sign in" + isDisplayed + Environment.NewLine);
+
+            if (isDisplayed == "True")
+            {
+                isDisplayed = "su prikazana";
+            }
+            else
+            {
+                isDisplayed = "nisu prikazana";
+            }
+
+            userEmail.SendKeys(email);
+            userpwd.SendKeys(pwd);
+            submitBtn.Click();
+
+            Sleep(10);
+
+            IWebElement myAcc = driver.FindElement(By.ClassName("user-name"));
+            isDisplayed = Convert.ToString(myAcc.Displayed);
+
+            if (isDisplayed == "True")
+            {
+                isDisplayed = "succesfully";
+            }
+            else
+            {
+                isDisplayed = " not succesfull";
+            }
+
+            System.IO.File.AppendAllText("D:\\Download folder\\Selenium32.txt", "Sign in" + isDisplayed + Environment.NewLine);
+
+        }
+
+        [TearDown]
+        public void CloseBrowser()
+        {
+            driver.Close();
+        }
+    }
+}
